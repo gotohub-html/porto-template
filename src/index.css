@@ -1,0 +1,456 @@
+/* Variable foundry faces (Fontshare): Clash Display = editorial display,
+   General Sans = engineer-clean body. Both ship variable wght axes so we can
+   animate weight with no layout shift. */
+@import url("https://api.fontshare.com/v2/css?f[]=clash-display@200,300,400,500,600,700&f[]=general-sans@300,400,500,600&display=swap");
+@import "tailwindcss";
+
+@theme {
+  --color-void: #0d0d0c;
+  --color-void-2: #161615;
+  --color-surface: #161615;
+  --color-ember: #e0533c;
+  --color-amber: #f59e0b;
+  --color-rust: #f97316;
+  --color-text-primary: #f5f5f3;
+  --color-text-muted: #8a8a85;
+
+  --font-sans: "General Sans", sans-serif;
+  --font-display: "Clash Display", sans-serif;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  background-color: var(--color-void);
+  color: var(--color-text-primary);
+  font-family: var(--font-sans);
+  overflow-x: hidden;
+  scroll-behavior: smooth;
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-ember) var(--color-void);
+}
+
+/* Scrollbar styling */
+body::-webkit-scrollbar {
+  width: 6px;
+}
+
+body::-webkit-scrollbar-track {
+  background: var(--color-void);
+}
+
+body::-webkit-scrollbar-thumb {
+  background: var(--color-void-2);
+  border-radius: 3px;
+}
+
+body::-webkit-scrollbar-thumb:hover {
+  background: var(--color-ember);
+}
+
+/* ===== Iridescent / Pearl utilities ===== */
+
+/* Frosted glass panel */
+.editorial-panel,
+.glass-panel {
+  background: rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.editorial-card {
+  transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.editorial-card:hover {
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(224, 83, 60, 0.35);
+  transform: translateY(-4px);
+  box-shadow: 0 0 40px -10px rgba(224, 83, 60, 0.25),
+    0 0 60px -20px rgba(245, 158, 11, 0.15);
+}
+
+/* Iridescent pearl text gradient (nacre sheen) */
+.iridescent-text {
+  background: linear-gradient(
+    100deg,
+    #e0533c 0%,
+    #f59e0b 50%,
+    #e0533c 100%
+  );
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+  animation: pearl-shift 8s linear infinite;
+}
+
+@keyframes pearl-shift {
+  to {
+    background-position: 200% center;
+  }
+}
+
+/* Iridescent border that animates on hover */
+.iridescent-border {
+  position: relative;
+}
+.iridescent-border::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(
+    135deg,
+    rgba(224, 83, 60, 0.6),
+    rgba(245, 158, 11, 0.4),
+    rgba(224, 83, 60, 0.5)
+  );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+  pointer-events: none;
+}
+.iridescent-border:hover::before {
+  opacity: 1;
+}
+
+/* Soft glow pulse used by Vault cards on hover */
+@keyframes glow-pulse {
+  0%,
+  100% {
+    box-shadow: 0 0 25px -8px rgba(224, 83, 60, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 45px -8px rgba(245, 158, 11, 0.55);
+  }
+}
+.glow-pulse {
+  animation: glow-pulse 2.4s ease-in-out infinite;
+}
+
+/* Custom drawing underline effect */
+.draw-underline {
+  position: relative;
+}
+
+.draw-underline::after {
+  content: "";
+  position: absolute;
+  width: 100%;
+  transform: scaleX(0);
+  height: 1.5px;
+  bottom: -4px;
+  left: 0;
+  background: linear-gradient(90deg, #e0533c, #f59e0b);
+  transform-origin: bottom right;
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.draw-underline:hover::after {
+  transform: scaleX(1);
+  transform-origin: bottom left;
+}
+
+/* Custom selection color */
+::selection {
+  background: var(--color-ember);
+  color: var(--color-void);
+}
+
+/* Typography architecture */
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--font-display);
+  letter-spacing: -0.03em;
+  font-weight: 700;
+}
+
+/* Variable-weight hover (no layout shift) — for nav links & interactive type.
+   font-variation-settings is animatable, so weight glides instead of snapping. */
+.weight-hover {
+  font-variation-settings: "wght" 500;
+  transition: font-variation-settings 0.45s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.weight-hover:hover {
+  font-variation-settings: "wght" 700;
+}
+
+/* Accessible, on-brand keyboard focus ring. Shows only for keyboard users
+   (:focus-visible), never steals the outline without a replacement. */
+.focus-ring {
+  outline: none;
+}
+.focus-ring:focus-visible {
+  outline: 2px solid var(--color-ember);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+/* Skills ticker text loop animation */
+@keyframes ticker {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+  100% {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+/* Reverse direction ticker */
+@keyframes ticker-reverse {
+  0% {
+    transform: translate3d(-50%, 0, 0);
+  }
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+.ticker-wrap {
+  overflow: hidden;
+  width: 100%;
+}
+
+.ticker {
+  display: flex;
+  white-space: nowrap;
+  animation: ticker 40s linear infinite;
+  width: max-content;
+}
+
+.ticker-rev {
+  animation: ticker-reverse 35s linear infinite;
+}
+
+.ticker:hover {
+  animation-play-state: paused;
+}
+
+/* Big marquee used in Hero + Showreel */
+@keyframes marquee {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+.marquee-track {
+  display: inline-flex;
+  white-space: nowrap;
+  width: max-content;
+  animation: marquee 30s linear infinite;
+  will-change: transform;
+}
+
+/* Slow spin for spiral motif */
+@keyframes slow-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.slow-spin {
+  animation: slow-spin 40s linear infinite;
+}
+
+.card-scan-line {
+  animation: card-scan 3.5s linear infinite;
+}
+
+/* ===== 2.5D Backrooms Lobby Styles ===== */
+
+/* Navajo-yellow wallpaper with horizontal stripes */
+.bg-wallpaper-stripes {
+  background-color: #D4C27A;
+  background-image: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 15px,
+    rgba(26, 26, 15, 0.05) 15px,
+    rgba(26, 26, 15, 0.05) 16px
+  );
+}
+
+/* 3D perspective setup for hallway elements */
+.perspective-hallway {
+  perspective: 1000px;
+  transform-style: preserve-3d;
+}
+
+/* Perspective lines for vanishing corridor illusion */
+.bg-hallway-perspective {
+  position: absolute;
+  inset: 0;
+  background: 
+    /* Ceiling lines */
+    linear-gradient(to bottom right, transparent 49.5%, rgba(61, 61, 30, 0.28) 50%, transparent 50.5%) 0 0/50% 50% no-repeat,
+    linear-gradient(to bottom left, transparent 49.5%, rgba(61, 61, 30, 0.28) 50%, transparent 50.5%) 100% 0/50% 50% no-repeat,
+    /* Floor lines */
+    linear-gradient(to top right, transparent 49.5%, rgba(61, 61, 30, 0.28) 50%, transparent 50.5%) 0 100%/50% 50% no-repeat,
+    linear-gradient(to top left, transparent 49.5%, rgba(61, 61, 30, 0.28) 50%, transparent 50.5%) 100% 100%/50% 50% no-repeat;
+}
+
+/* Vanishing point dark gap at the center of the corridor */
+.bg-hallway-perspective::after {
+  content: '';
+  position: absolute;
+  top: 48%;
+  left: 48%;
+  width: 4%;
+  height: 4%;
+  background: #1A1A0F;
+  filter: blur(12px);
+  opacity: 0.9;
+  border-radius: 50%;
+}
+
+/* Door 3D frame setting */
+.door-frame {
+  perspective: 1200px;
+  transform-style: preserve-3d;
+}
+
+
+/* Text reveal mask classes */
+.text-reveal-wrapper {
+  overflow: hidden;
+  display: inline-block;
+}
+
+.text-reveal-char {
+  display: inline-block;
+  transform: translateY(100%);
+}
+
+/* Respect reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
+/* ===== Liminal Backrooms Retro CSS ===== */
+.crt-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: linear-gradient(
+    rgba(18, 16, 16, 0) 50%,
+    rgba(0, 0, 0, 0.16) 50%
+  ),
+  linear-gradient(
+    90deg,
+    rgba(255, 0, 0, 0.04),
+    rgba(0, 255, 0, 0.02),
+    rgba(0, 0, 255, 0.04)
+  );
+  background-size: 100% 4px, 6px 100%;
+  z-index: 9999;
+  pointer-events: none;
+}
+
+.crt-overlay::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: radial-gradient(circle, transparent 50%, rgba(0, 0, 0, 0.4) 150%);
+  pointer-events: none;
+}
+
+@keyframes vhs-flicker {
+  0% { opacity: 0.985; }
+  20% { opacity: 0.995; }
+  40% { opacity: 0.98; }
+  60% { opacity: 1.0; }
+  80% { opacity: 0.99; }
+  100% { opacity: 0.985; }
+}
+
+.vhs-flicker {
+  animation: vhs-flicker 0.1s infinite;
+}
+
+@keyframes screen-shake {
+  0% { transform: translate(0, 0) rotate(0deg); }
+  10% { transform: translate(-3px, 2px) rotate(-0.5deg); }
+  20% { transform: translate(-1px, -1px) rotate(0.5deg); }
+  30% { transform: translate(3px, 1px) rotate(0deg); }
+  40% { transform: translate(1px, -2px) rotate(0.5deg); }
+  50% { transform: translate(-1px, 2px) rotate(-0.5deg); }
+  60% { transform: translate(-3px, 1px) rotate(0deg); }
+  70% { transform: translate(2px, 1px) rotate(-0.5deg); }
+  80% { transform: translate(-1px, -1px) rotate(0.5deg); }
+  90% { transform: translate(2px, 2px) rotate(0deg); }
+  100% { transform: translate(1px, -2px) rotate(-0.5deg); }
+}
+
+.shake-active {
+  animation: screen-shake 0.25s ease-in-out infinite;
+}
+
+/* Win95 style borders */
+.win95-border {
+  border-top: 2px solid #fff;
+  border-left: 2px solid #fff;
+  border-right: 2px solid #808080;
+  border-bottom: 2px solid #808080;
+  box-shadow: 1px 1px 0px 0px #000;
+}
+
+.win95-border-inset {
+  border-top: 2px solid #808080;
+  border-left: 2px solid #808080;
+  border-right: 2px solid #fff;
+  border-bottom: 2px solid #fff;
+  background-color: #eedaa2;
+}
+
+.win95-button:active {
+  border-top: 2px solid #808080;
+  border-left: 2px solid #808080;
+  border-right: 2px solid #fff;
+  border-bottom: 2px solid #fff;
+  padding-top: 5px;
+  padding-left: 5px;
+}
+
+@keyframes vhs-tracking {
+  0% { transform: translateY(-100%); }
+  12% { transform: translateY(100vh); }
+  100% { transform: translateY(100vh); }
+}
+
+.vhs-tracking-line {
+  position: fixed;
+  left: 0;
+  width: 100%;
+  height: 10px;
+  background: rgba(255, 255, 255, 0.08);
+  border-top: 1.5px solid rgba(255, 255, 255, 0.15);
+  border-bottom: 1.5px solid rgba(255, 255, 255, 0.15);
+  filter: blur(0.5px);
+  z-index: 9998;
+  pointer-events: none;
+  animation: vhs-tracking 14s linear infinite;
+}
+
+
