@@ -229,17 +229,16 @@ const HeroSection = () => {
         <div className="hero-details grid grid-cols-1 md:grid-cols-12 gap-8 w-full items-end mt-4 border-t border-white/5 pt-8">
           <div className="md:col-span-6">
             <p className="font-sans text-sm sm:text-base text-text-muted leading-relaxed max-w-xl">
-              Developer &amp; designer otodidak asal Indonesia yang bikin website interaktif
-              dan fungsional. Gabungin estetika visual dengan performa kode yang optimal.
+              Developer &amp; designer otodidak. Suka bikin website interaktif yang bersih dan gak ngebosenin.
             </p>
           </div>
           <div className="md:col-span-3 flex flex-col gap-1 text-text-muted font-display text-xs uppercase tracking-wider font-semibold md:pl-8">
             <span className="text-text-primary/70">Ketersediaan</span>
             <span className="flex items-center gap-1.5">
               <span className="w-1.5 h-1.5 rounded-full bg-amber glow-pulse" />
-              Lagi mager tapi ya mau-mau aja
+              Lagi mager
             </span>
-            <span className="normal-case tracking-normal">Sebenarnya pengen ambil kerjaan tapi belum siap wkwk</span>
+            <span className="normal-case tracking-normal">Tapi kalau ada project seru kabarin aja</span>
           </div>
           <div className="hero-ctas md:col-span-3 flex flex-col sm:flex-row md:flex-col gap-4 justify-end md:items-end w-full">
             <a

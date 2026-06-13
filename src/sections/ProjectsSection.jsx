@@ -259,7 +259,7 @@ const ProjectsSection = () => {
           </div>
           <h2 className="font-display font-bold text-4xl lg:text-7xl tracking-tighter max-w-xl leading-[95%]">
             <span className="text-text-primary">Karya yang </span>
-            <span className="iridescent-text">gue rilis.</span>
+            <span className="iridescent-text">gua rilis.</span>
           </h2>
           <p className="font-sans text-sm text-text-muted mt-6 max-w-sm">
             Scroll terus — karyanya bakal geser ke samping. Dua web aktif, satu buku coretan digital.

@@ -284,7 +284,7 @@ const SoundGate = ({ onEnter, conceptMode = "main" }) => {
                   NOCLIP DIRECTORY
                 </h1>
                 <p className="font-sans text-xs md:text-sm text-text-muted max-w-xs">
-                  Pengalaman interaktif. Lebih seru dinikmati dengan suara aktif.
+                  Interactive experience. Bagusan buka pake earphone/audio aktif.
                 </p>
               </div>
 
@@ -294,14 +294,14 @@ const SoundGate = ({ onEnter, conceptMode = "main" }) => {
                   className="group px-8 py-3.5 rounded-full font-display font-semibold text-xs tracking-widest uppercase bg-ember text-void hover:bg-amber hover:text-text-primary transition-colors duration-300 flex items-center gap-2 cursor-pointer"
                 >
                   <Volume2 size={14} />
-                  Masuk pakai suara
+                  Masuk pake audio
                 </button>
                 <button
                   onClick={() => handleEnter(false)}
                   className="px-8 py-3.5 rounded-full font-display font-semibold text-xs tracking-widest uppercase border border-white/15 text-text-primary hover:border-ember/40 hover:bg-ember/5 transition-all duration-300 flex items-center gap-2 cursor-pointer"
                 >
                   <VolumeX size={14} />
-                  Masuk tanpa suara
+                  Masuk tanpa audio
                 </button>
               </div>
             </div>
@@ -357,17 +357,17 @@ const SoundGate = ({ onEnter, conceptMode = "main" }) => {
                 ⚠️
               </div>
               <h2 className="font-display font-bold text-lg text-text-primary uppercase tracking-wider">
-                Rekomendasi Visual
+                Rekomendasi
               </h2>
               <p className="font-sans text-xs text-text-muted leading-relaxed">
-                Biar dapet pengalaman visual interaktif dan performa paling maksimal, direkomendasikan buat buka website ini pake <span className="text-text-primary font-semibold font-sans">laptop atau PC</span> ya!
+                Biar lancar dan visualnya mantap, mending buka pake laptop atau PC.
               </p>
             </div>
             <button
               onClick={() => setShowWarning(false)}
               className="w-full py-3 rounded bg-ember text-void font-display font-semibold uppercase tracking-wider text-[10px] hover:bg-white hover:text-black transition-colors duration-300 cursor-pointer"
             >
-              Oke, Paham
+              Oke
             </button>
           </div>
         </div>

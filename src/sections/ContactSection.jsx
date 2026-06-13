@@ -45,7 +45,7 @@ const ContactSection = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    alert("Pesan terkirim. Makasih ya udah ngehubungin!");
+    alert("Pesan masuk. Ntar gua baca.");
   };
 
   return (
@@ -63,15 +63,15 @@ const ContactSection = () => {
             <div className="flex items-center gap-3">
               <div className="w-1.5 h-1.5 rounded-full bg-ember" />
               <span className="font-display text-text-muted text-xs uppercase tracking-widest font-semibold">
-                Hubungi Gue
+                Hubungi Gua
               </span>
             </div>
             <h2 className="font-display font-bold text-3xl md:text-4xl text-text-primary tracking-tighter">
-              Yuk, bikin sesuatu bareng-bareng.
+              Ada ide projek seru?
             </h2>
             <div className="w-16 h-[1px] bg-ember mt-2" />
             <p className="font-sans text-sm text-text-muted leading-relaxed mt-4">
-              Ada pertanyaan, tawaran project, atau cuma mau ngobrol-ngobrol santai? Kirim aja form di samping atau hubungi lewat media sosial di bawah.
+              Drop aja pesan lewat form di sebelah, atau bisa langsung hubungi medsos gua di bawah.
             </p>
           </div>
 
@@ -114,7 +114,7 @@ const ContactSection = () => {
         <form onSubmit={handleSubmit} className="lg:col-span-3 flex flex-col gap-5">
           <div className="flex flex-col gap-1.5">
             <label htmlFor="name" className="font-display text-[10px] font-semibold uppercase tracking-wider text-text-muted">
-              Nama Kamu
+              Nama
             </label>
             <input
               type="text"
@@ -127,7 +127,7 @@ const ContactSection = () => {
 
           <div className="flex flex-col gap-1.5">
             <label htmlFor="email" className="font-display text-[10px] font-semibold uppercase tracking-wider text-text-muted">
-              Alamat Email
+              Email
             </label>
             <input
               type="email"
@@ -140,14 +140,14 @@ const ContactSection = () => {
 
           <div className="flex flex-col gap-1.5">
             <label htmlFor="message" className="font-display text-[10px] font-semibold uppercase tracking-wider text-text-muted">
-              Pesan Kamu
+              Pesan
             </label>
             <textarea
               id="message"
               required
               rows={4}
               className="w-full px-4 py-3 rounded-lg border border-white/5 bg-white/[0.01] text-white focus-ring focus:border-ember/40 focus:bg-white/[0.02] transition-all duration-300 text-sm font-sans resize-none"
-              placeholder="Tulis pesan atau detail project kamu di sini..."
+              placeholder="Tulis apa aja di sini..."
             />
           </div>
 
@@ -155,7 +155,7 @@ const ContactSection = () => {
             type="submit"
             className="w-full py-3.5 rounded-lg font-display font-semibold uppercase tracking-wider text-xs bg-ember text-void flex items-center justify-center gap-2 hover:bg-amber hover:text-text-primary transition-colors duration-300 hover:scale-[1.005] active:scale-[0.995] cursor-pointer"
           >
-            <span>Kirim Pesan</span>
+            <span>Kirim</span>
             <Send size={12} />
           </button>
         </form>

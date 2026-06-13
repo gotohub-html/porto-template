@@ -125,7 +125,7 @@ const AboutSection = () => {
             </span>
           </div>
           <h2 className="font-display font-bold text-3xl md:text-5xl text-text-primary tracking-tighter">
-            Digerakkan rasa penasaran, <span className="iridescent-text">dirancang lewat kode.</span>
+            Cuma iseng coding, <span className="iridescent-text">keterusan bikin sesuatu.</span>
           </h2>
           <div className="w-16 h-[1px] bg-gradient-to-r from-ember to-amber mt-2" />
         </div>
@@ -135,18 +135,18 @@ const AboutSection = () => {
           {/* Main Description */}
           <div className="lg:col-span-3 flex flex-col gap-6 font-sans text-text-muted leading-relaxed text-base md:text-lg">
             <p>
-              Kenalin, gue <span className="text-text-primary font-semibold">Dani</span>, seorang developer &amp; designer otodidak asal <span className="censor-reveal relative inline-block font-semibold text-text-primary px-1.5 cursor-none group select-none">
+              Gua <span className="text-text-primary font-semibold">Dani</span>, developer &amp; designer otodidak dari <span className="censor-reveal relative inline-block font-semibold text-text-primary px-1.5 cursor-none group select-none">
                 <span className="blur-sm group-hover:blur-none transition-all duration-300 text-text-muted group-hover:text-text-primary">
                   Purwakarta
                 </span>
                 <span className="absolute inset-y-1 left-0 right-0 z-10 bg-[repeating-linear-gradient(-45deg,#f59e0b,#f59e0b_6px,#0d0d0c_6px,#0d0d0c_12px)] border border-amber-500/20 select-none pointer-events-none transform -skew-y-1 rotate-1 opacity-100 group-hover:opacity-0 group-hover:scale-y-0 transition-all duration-300 origin-center" />
-              </span>, Indonesia. Gue hobi bikin solusi digital yang rapi, mulai dari tampilan front-end yang optimal sampai API REST yang ringan.
+              </span>, Indonesia. Gua suka bikin website yang rapi—dari tampilan front-end sampai API backend yang enteng.
             </p>
             <p>
-              Di portfolio ini, gue gabungin tata letak front-end yang keren dengan arsitektur backend yang solid. Gue biasanya pakai TypeScript, CSS Grid, dan kurva animasi kustom buat bikin web interaktif yang responsif.
+              Di portfolio ini, gua gabungin apa yang gua suka: layout yang bersih dan animasi yang pas. Biasanya pakai TypeScript sama React.
             </p>
             <p className="text-text-muted/70 text-sm md:text-base border-l border-ember pl-4 italic">
-              Masih terus belajar, tapi biarkan hasil project yang membuktikannya.
+              Gak usah banyak omong, langsung liat project gua aja.
             </p>
           </div>
 
@@ -233,7 +233,7 @@ const AboutSection = () => {
 
         {/* Skill Chips Grid */}
         <div className="flex flex-col gap-6">
-          <h3 className="font-display font-bold text-lg text-text-primary uppercase tracking-wider">Keahlian Teknis</h3>
+          <h3 className="font-display font-bold text-lg text-text-primary uppercase tracking-wider">Tech Stack</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
             {skillGroups.map((group, i) => (
               <div
@@ -261,7 +261,7 @@ const AboutSection = () => {
         {/* Subtle Bottom Affordance */}
         <div className="w-full text-center mt-4">
           <p className="font-display text-[9px] text-text-muted tracking-widest uppercase">
-            Dalam tahap pengembangan aktif. Project baru akan segera hadir.
+            Masih tahap didevelop. Ntar kalo ada project baru gua update.
           </p>
         </div>
       </div>

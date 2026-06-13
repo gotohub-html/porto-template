@@ -19,28 +19,28 @@ const VaultSection = () => {
     {
       code: "Project NOVA",
       category: "Web App / SaaS",
-      desc: "Alat yang mengubah cara developer mengelola alur kerja. Masih mode senyap.",
+      desc: "Sistem manajemen workflow buat dev. Masih didevelop diem-diem.",
       status: "IN DEV",
       est: "Q3 2025",
     },
     {
       code: "Project GRID",
       category: "Dashboard / Admin Panel",
-      desc: "Dashboard analitik lengkap dengan visualisasi data real-time. Hampir rampung.",
+      desc: "Dashboard analitik realtime. Dikit lagi kelar.",
       status: "BETA",
       est: "Q4 2025",
     },
     {
       code: "Project REALM",
       category: "Game / Interactive",
-      desc: "Pengalaman browser interaktif. Setengah game, setengah seni.",
+      desc: "Browser interactive thingy. Setengah game, setengah random art.",
       status: "CONCEPT",
       est: "TBD",
     },
     {
       code: "Project ARC",
       category: "Dashboard / Admin Panel",
-      desc: "Alat internal yang dibangun ulang dari nol dengan design system yang rapi.",
+      desc: "Internal tools yang ditulis ulang biar gak berantakan.",
       status: "TESTING",
       est: "TBD",
     },
@@ -114,7 +114,7 @@ const VaultSection = () => {
           Arsip Rahasia
         </h2>
         <p className="font-sans text-xs sm:text-sm text-text-muted max-w-lg mt-1">
-          Konsep internal, framework belum rilis, dan eksperimen yang masih digodok dalam mode senyap.
+          Iseng-iseng bikin konsep, projek setengah mateng, sama eksperimen aneh yang belum kelar.
         </p>
         <div className="w-16 h-[1px] bg-ember mt-4" />
       </div>
@@ -132,7 +132,7 @@ const VaultSection = () => {
                 <Lock size={16} />
               </div>
               <span className="text-[9px] font-display font-bold tracking-widest text-text-muted uppercase">
-                Arsip Rahasia
+                Dikunci
               </span>
             </div>
 
@@ -172,7 +172,7 @@ const VaultSection = () => {
                   onClick={() => openRequestModal(p)}
                   className="px-3 py-1 rounded border border-ember/40 hover:bg-ember hover:text-void transition-all duration-300 font-display text-[9px] font-semibold uppercase tracking-wider text-ember cursor-pointer"
                 >
-                  Ajukan Akses
+                  Minta Akses
                 </button>
               </div>
 
@@ -204,7 +204,7 @@ const VaultSection = () => {
               <div className="flex items-center gap-2">
                 <Lock size={14} className="text-ember" />
                 <span className="font-display text-[10px] uppercase font-bold tracking-widest text-text-muted">
-                  Formulir Akses
+                  Akses Projek
                 </span>
               </div>
               <button 
@@ -218,7 +218,7 @@ const VaultSection = () => {
 
             {/* Project Code Banner */}
             <div className="py-2.5 px-4 rounded bg-white/[0.02] border border-white/5 flex justify-between items-center text-xs font-display">
-              <span className="text-text-muted">Target Projek:</span>
+              <span className="text-text-muted">Target:</span>
               <span className="text-text-primary font-bold">{activeProject.code}</span>
             </div>
 
@@ -226,7 +226,7 @@ const VaultSection = () => {
               <form onSubmit={handleFormSubmit} className="flex flex-col gap-4">
                 <div className="flex flex-col gap-1">
                   <label htmlFor="name" className="font-display text-[9px] font-semibold uppercase tracking-wider text-text-muted">
-                    Nama Kamu
+                    Nama
                   </label>
                   <input
                     type="text"
@@ -235,13 +235,13 @@ const VaultSection = () => {
                     value={formData.name}
                     onChange={handleInputChange}
                     className="w-full px-4 py-2.5 rounded border border-white/5 bg-white/[0.01] text-white focus-ring focus:border-ember/40 text-xs font-sans"
-                    placeholder="Budi Santoso"
+                    placeholder="Budi"
                   />
                 </div>
 
                 <div className="flex flex-col gap-1">
                   <label htmlFor="email" className="font-display text-[9px] font-semibold uppercase tracking-wider text-text-muted">
-                    Alamat Email
+                    Email
                   </label>
                   <input
                     type="email"
@@ -256,7 +256,7 @@ const VaultSection = () => {
 
                 <div className="flex flex-col gap-1">
                   <label htmlFor="reason" className="font-display text-[9px] font-semibold uppercase tracking-wider text-text-muted">
-                    Alasan Meminta Akses
+                    Kenapa pengen liat?
                   </label>
                   <textarea
                     id="reason"
@@ -265,7 +265,7 @@ const VaultSection = () => {
                     value={formData.reason}
                     onChange={handleInputChange}
                     className="w-full px-4 py-2.5 rounded border border-white/5 bg-white/[0.01] text-white focus-ring focus:border-ember/40 text-xs font-sans resize-none"
-                    placeholder="Jelasin kenapa kamu butuh akses awal/uji coba..."
+                    placeholder="Tulis alasannya..."
                   />
                 </div>
 
@@ -277,31 +277,31 @@ const VaultSection = () => {
                 </button>
               </form>
             ) : (
-              <div className="flex flex-col items-center text-center gap-4 py-4 animate-[successIntro_0.4s_ease-out]">
-                <style dangerouslySetInnerHTML={{__html: `
-                  @keyframes successIntro {
-                    from { transform: translateY(10px); opacity: 0; }
-                    to { transform: translateY(0); opacity: 1; }
-                  }
-                `}} />
-                <div className="w-12 h-12 rounded-full bg-ember/10 border border-ember/20 flex items-center justify-center text-ember">
-                  <Lock size={20} className="animate-pulse" />
+                <div className="flex flex-col items-center text-center gap-4 py-4 animate-[successIntro_0.4s_ease-out]">
+                  <style dangerouslySetInnerHTML={{__html: `
+                    @keyframes successIntro {
+                      from { transform: translateY(10px); opacity: 0; }
+                      to { transform: translateY(0); opacity: 1; }
+                    }
+                  `}} />
+                  <div className="w-12 h-12 rounded-full bg-ember/10 border border-ember/20 flex items-center justify-center text-ember">
+                    <Lock size={20} className="animate-pulse" />
+                  </div>
+                  <div className="flex flex-col gap-1">
+                    <span className="font-display font-bold text-sm text-white">Udah kekirim</span>
+                    <p className="font-sans text-xs text-text-muted leading-relaxed px-4">
+                      Tunggu aja, ntar tokennya dikirim ke <span className="text-white/90">{formData.email}</span>.
+                    </p>
+                  </div>
+                  <div className="w-full flex justify-center mt-2">
+                    <button
+                      onClick={() => setModalOpen(false)}
+                      className="px-6 py-2 border border-white/10 hover:border-white/20 rounded text-[10px] font-display font-semibold uppercase tracking-wider text-text-primary transition-colors cursor-pointer"
+                    >
+                      Oke
+                    </button>
+                  </div>
                 </div>
-                <div className="flex flex-col gap-1">
-                  <span className="font-display font-bold text-sm text-white">Permintaan Terkirim</span>
-                  <p className="font-sans text-xs text-text-muted leading-relaxed px-4">
-                    Permintaan akses kamu sudah dicatat. Token autentikasi bakal dikirim ke <span className="text-white/90">{formData.email}</span>.
-                  </p>
-                </div>
-                <div className="w-full flex justify-center mt-2">
-                  <button
-                    onClick={() => setModalOpen(false)}
-                    className="px-6 py-2 border border-white/10 hover:border-white/20 rounded text-[10px] font-display font-semibold uppercase tracking-wider text-text-primary transition-colors cursor-pointer"
-                  >
-                    Tutup
-                  </button>
-                </div>
-              </div>
             )}
           </div>
         </div>

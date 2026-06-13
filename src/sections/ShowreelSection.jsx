@@ -120,7 +120,7 @@ const ShowreelSection = () => {
           — Sorotan Pilihan
         </span>
         <p className="font-sans text-sm md:text-base text-text-muted max-w-xl leading-relaxed">
-          Kumpulan cuplikan interface, mikro-interaksi, dan eksperimen larut malam — bahasa visual di balik setiap karya.
+          Kumpulan cuplikan UI, animasi, sama eksperimen iseng tengah malam.
         </p>
         <div className="flex items-center gap-8 mt-2 font-display">
           <div className="flex flex-col items-center">
