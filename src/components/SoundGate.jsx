@@ -25,7 +25,10 @@ const SoundGate = ({ onEnter, conceptMode = "main" }) => {
   // WebAudio refs
   const audioCtxRef = useRef(null);
   const gainRef = useRef(null);
-  const oscRefs = useRef([]);
+  const audioRef = useRef(null);
+  const filterNodeRef = useRef(null);
+  const wetGainRef = useRef(null);
+  const droneOscsRef = useRef([]);
 
   const startAmbient = () => {
     try {
@@ -35,85 +38,73 @@ const SoundGate = ({ onEnter, conceptMode = "main" }) => {
       const now = ctx.currentTime;
 
       const master = ctx.createGain();
+      // Swell to reduced base volume (0.05) instead of the loud 0.14
       master.gain.value = 0;
       master.connect(ctx.destination);
 
-      // gentle reverb-ish tail via a feedback delay (no asset needed)
+      // Create Audio Element for MP3
+      const audio = new Audio("/music/soundgate.mp3");
+      audio.loop = true;
+      audio.crossOrigin = "anonymous";
+      
+      const source = ctx.createMediaElementSource(audio);
+
+      // Distancing filter (lowpass)
+      const distFilter = ctx.createBiquadFilter();
+      distFilter.type = "lowpass";
+      distFilter.frequency.value = 20000;
+      distFilter.Q.value = 1;
+
+      source.connect(distFilter);
+
+      // gentle reverb-ish tail via feedback delay
       const delay = ctx.createDelay();
-      delay.delayTime.value = 0.33;
+      delay.delayTime.value = 0.45;
       const fb = ctx.createGain();
-      fb.gain.value = 0.32;
+      fb.gain.value = 0.38;
       const wet = ctx.createGain();
       wet.gain.value = 0.25;
+
       delay.connect(fb);
       fb.connect(delay);
       delay.connect(wet);
+
+      distFilter.connect(master);
+      distFilter.connect(delay);
       wet.connect(master);
 
-      // evolving lowpass shaped by a slow LFO → "breathing" pad
-      const filter = ctx.createBiquadFilter();
-      filter.type = "lowpass";
-      filter.frequency.value = 520;
-      filter.Q.value = 4;
-      filter.connect(master);
-      filter.connect(delay);
+      // Low-pitched ambient drone (55Hz / 82.4Hz oscillators)
+      const osc1 = ctx.createOscillator();
+      osc1.type = "sine";
+      osc1.frequency.value = 55; // low A1
+      const og1 = ctx.createGain();
+      og1.gain.value = 0.22;
+      osc1.connect(og1);
+      og1.connect(distFilter);
+      osc1.start();
 
-      const lfo = ctx.createOscillator();
-      lfo.type = "sine";
-      lfo.frequency.value = 0.07;
-      const lfoGain = ctx.createGain();
-      lfoGain.gain.value = 320;
-      lfo.connect(lfoGain);
-      lfoGain.connect(filter.frequency);
-      lfo.start();
+      const osc2 = ctx.createOscillator();
+      osc2.type = "sine";
+      osc2.frequency.value = 82.4; // low E2
+      const og2 = ctx.createGain();
+      og2.gain.value = 0.12;
+      osc2.connect(og2);
+      og2.connect(distFilter);
+      osc2.start();
 
-      // Cmin9-ish cinematic pad: detuned layers for width
-      const voices = [
-        { f: 65.41, type: "sine", g: 0.5, det: 0 },     // C2 sub
-        { f: 130.81, type: "triangle", g: 0.22, det: -6 }, // C3
-        { f: 155.56, type: "sine", g: 0.18, det: 5 },    // Eb3
-        { f: 196.0, type: "sine", g: 0.18, det: -4 },    // G3
-        { f: 233.08, type: "triangle", g: 0.12, det: 7 }, // Bb3
-        { f: 392.0, type: "sine", g: 0.07, det: 9 },     // G4 shimmer
-      ];
-      voices.forEach((v) => {
-        const osc = ctx.createOscillator();
-        osc.type = v.type;
-        osc.frequency.value = v.f;
-        osc.detune.value = v.det;
-        const og = ctx.createGain();
-        og.gain.value = v.g;
-        osc.connect(og);
-        og.connect(filter);
-        osc.start();
-        oscRefs.current.push(osc);
-      });
+      droneOscsRef.current = [osc1, osc2];
 
-      // airy noise bed (very soft) for liminal texture
-      const buf = ctx.createBuffer(1, ctx.sampleRate * 2, ctx.sampleRate);
-      const d = buf.getChannelData(0);
-      for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
-      const noise = ctx.createBufferSource();
-      noise.buffer = buf;
-      noise.loop = true;
-      const nf = ctx.createBiquadFilter();
-      nf.type = "bandpass";
-      nf.frequency.value = 1800;
-      nf.Q.value = 0.6;
-      const ng = ctx.createGain();
-      ng.gain.value = 0.012;
-      noise.connect(nf);
-      nf.connect(ng);
-      ng.connect(master);
-      noise.start();
+      audio.play().catch((err) => console.log("Audio play blocked:", err));
 
-      // cinematic entry swell
-      master.gain.linearRampToValueAtTime(0.14, now + 3.2);
+      master.gain.linearRampToValueAtTime(0.06, now + 3.2);
 
       audioCtxRef.current = ctx;
       gainRef.current = master;
-    } catch {
-      /* audio unavailable — silently continue */
+      audioRef.current = audio;
+      filterNodeRef.current = distFilter;
+      wetGainRef.current = wet;
+    } catch (err) {
+      console.error("Failed to start audio:", err);
     }
   };
 
@@ -127,18 +118,24 @@ const SoundGate = ({ onEnter, conceptMode = "main" }) => {
 
   const toggleMute = () => {
     const ctx = audioCtxRef.current;
+    const audio = audioRef.current;
     if (!ctx) {
-      // not started yet -> start it now
       startAmbient();
       setMuted(false);
       return;
     }
     if (muted) {
       ctx.resume?.();
-      gainRef.current.gain.linearRampToValueAtTime(0.14, ctx.currentTime + 0.6);
+      audio?.play().catch(() => {});
+      gainRef.current.gain.linearRampToValueAtTime(0.06, ctx.currentTime + 0.6);
       setMuted(false);
     } else {
       gainRef.current.gain.linearRampToValueAtTime(0, ctx.currentTime + 0.4);
+      setTimeout(() => {
+        if (gainRef.current && gainRef.current.gain.value === 0) {
+          audio?.pause();
+        }
+      }, 400);
       setMuted(true);
     }
   };
@@ -147,15 +144,59 @@ const SoundGate = ({ onEnter, conceptMode = "main" }) => {
   useEffect(() => {
     if (!audioCtxRef.current || !gainRef.current) return;
     const ctx = audioCtxRef.current;
+    const audio = audioRef.current;
     if (conceptMode === "backrooms") {
       gainRef.current.gain.linearRampToValueAtTime(0, ctx.currentTime + 0.2);
+      setTimeout(() => {
+        audio?.pause();
+      }, 200);
     } else {
       if (!muted) {
         ctx.resume?.();
-        gainRef.current.gain.linearRampToValueAtTime(0.14, ctx.currentTime + 0.4);
+        audio?.play().catch(() => {});
+        gainRef.current.gain.linearRampToValueAtTime(0.06, ctx.currentTime + 0.4);
       }
     }
   }, [conceptMode, muted]);
+
+  // Handle scroll-based spatial distancing
+  useEffect(() => {
+    const handleScroll = () => {
+      if (!audioCtxRef.current || !filterNodeRef.current || !gainRef.current || muted || conceptMode === "backrooms") return;
+
+      const scrollTop = window.scrollY;
+      const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+      if (docHeight <= 0) return;
+
+      // Scroll progress from 0 (top) to 1 (bottom)
+      const progress = Math.min(Math.max(scrollTop / docHeight, 0), 1);
+      const ctx = audioCtxRef.current;
+      const now = ctx.currentTime;
+
+      // 1. Roll off high frequencies (lowpass filter sweep)
+      const maxFreq = 20000;
+      const minFreq = 220; // very muffled/distant at bottom
+      const currentFreq = maxFreq * Math.pow(minFreq / maxFreq, progress);
+      filterNodeRef.current.frequency.setTargetAtTime(currentFreq, now, 0.1);
+
+      // 2. Reduce dry volume (gets quieter)
+      const maxVol = 0.06;
+      const minVol = 0.008;
+      const currentVol = maxVol - progress * (maxVol - minVol);
+      gainRef.current.gain.setTargetAtTime(currentVol, now, 0.1);
+
+      // 3. Increase relative wet reverb ratio
+      const minWet = 0.25;
+      const maxWet = 0.65;
+      const currentWet = minWet + progress * (maxWet - minWet);
+      if (wetGainRef.current) {
+        wetGainRef.current.gain.setTargetAtTime(currentWet, now, 0.1);
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [muted, conceptMode]);
 
   // Show visual/perf warning pop-up only on mobile or tablet devices
   useEffect(() => {
@@ -228,17 +269,25 @@ const SoundGate = ({ onEnter, conceptMode = "main" }) => {
 
   // Cleanup audio on unmount
   useEffect(() => {
-    const oscillators = oscRefs.current;
-    const ctxRef = audioCtxRef;
     return () => {
-      oscillators.forEach((o) => {
+      if (droneOscsRef.current) {
+        droneOscsRef.current.forEach((o) => {
+          try {
+            o.stop();
+          } catch {}
+        });
+      }
+      if (audioRef.current) {
         try {
-          o.stop();
-        } catch {
-          /* already stopped */
-        }
-      });
-      ctxRef.current?.close?.();
+          audioRef.current.pause();
+          audioRef.current.src = "";
+        } catch {}
+      }
+      if (audioCtxRef.current) {
+        try {
+          audioCtxRef.current.close();
+        } catch {}
+      }
     };
   }, []);
 
