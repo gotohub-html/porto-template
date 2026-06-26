@@ -2,12 +2,14 @@ import { useRef, useState, useEffect } from "react";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/all";
+import { useLanguage } from "../context/LanguageContext";
 
 gsap.registerPlugin(ScrollTrigger);
 
 const AboutSection = () => {
   const containerRef = useRef(null);
   const statsRef = useRef(null);
+  const { language } = useLanguage();
 
   const [stability, setStability] = useState(99.84);
   const [humOffset, setHumOffset] = useState(0);
@@ -47,10 +49,10 @@ const AboutSection = () => {
   }, []);
 
   const stats = [
-    { label: "Project Selesai", value: 7, suffix: "+" },
-    { label: "Aplikasi Full-Stack", value: 3, suffix: "" },
-    { label: "Alat Berbasis AI", value: 2, suffix: "+" },
-    { label: "Mimpi Besar", value: 1, suffix: "" },
+    { label: language === 'id' ? "Project Selesai" : "Completed Projects", value: 7, suffix: "+" },
+    { label: language === 'id' ? "Aplikasi Full-Stack" : "Full-Stack Apps", value: 3, suffix: "" },
+    { label: language === 'id' ? "Alat Berbasis AI" : "AI Tools", value: 2, suffix: "+" },
+    { label: language === 'id' ? "Mimpi Besar" : "Big Dreams", value: 1, suffix: "" },
   ];
 
   const skillGroups = [
@@ -121,11 +123,14 @@ const AboutSection = () => {
           <div className="flex items-center gap-3">
             <div className="w-1.5 h-1.5 rounded-full bg-ember" />
             <span className="font-display text-text-muted text-xs uppercase tracking-widest font-semibold">
-              — Biografi
+              — {language === 'id' ? 'Biografi' : 'Biography'}
             </span>
           </div>
           <h2 className="font-display font-bold text-3xl md:text-5xl text-text-primary tracking-tighter">
-            Cuma iseng coding, <span className="iridescent-text">keterusan bikin sesuatu.</span>
+            {language === 'id' ? 'Cuma iseng coding, ' : 'Started coding for fun, '}
+            <span className="iridescent-text">
+              {language === 'id' ? 'keterusan bikin sesuatu.' : 'ended up building things.'}
+            </span>
           </h2>
           <div className="w-16 h-[1px] bg-gradient-to-r from-ember to-amber mt-2" />
         </div>
@@ -135,19 +140,38 @@ const AboutSection = () => {
           {/* Main Description */}
           <div className="lg:col-span-3 flex flex-col gap-6 font-sans text-text-muted leading-relaxed text-base md:text-lg">
             <p>
-              Gua <span className="text-text-primary font-semibold">Dani</span>, developer &amp; designer otodidak dari <span className="censor-reveal relative inline-block font-semibold text-text-primary px-1.5 cursor-none group select-none">
+              {language === 'id' ? 'Gua ' : 'I am '}
+              <span className="text-text-primary font-semibold">Dani</span>, 
+              {language === 'id' ? ' developer & designer otodidak dari ' : ' a self-taught developer & designer from '}
+              <span className="censor-reveal relative inline-block font-semibold text-text-primary px-1.5 cursor-none group select-none">
                 <span className="blur-sm group-hover:blur-none transition-all duration-300 text-text-muted group-hover:text-text-primary">
                   Purwakarta
                 </span>
                 <span className="absolute inset-y-1 left-0 right-0 z-10 bg-[repeating-linear-gradient(-45deg,#f59e0b,#f59e0b_6px,#0d0d0c_6px,#0d0d0c_12px)] border border-amber-500/20 select-none pointer-events-none transform -skew-y-1 rotate-1 opacity-100 group-hover:opacity-0 group-hover:scale-y-0 transition-all duration-300 origin-center" />
-              </span>, Indonesia. Gua suka bikin website yang rapi—dari tampilan front-end sampai API backend yang enteng.
+              </span>, Indonesia. 
+              {language === 'id' 
+                ? ' Gua suka bikin website yang rapi—dari tampilan front-end sampai API backend yang enteng.' 
+                : ' I love building neat websites—from front-end views to lightweight backend APIs.'}
             </p>
             <p>
-              Di portfolio ini, gua gabungin apa yang gua suka: layout yang bersih dan animasi yang pas. Biasanya pakai TypeScript sama React.
+              {language === 'id' 
+                ? 'Di portfolio ini, gua gabungin apa yang gua suka: layout yang bersih dan animasi yang pas. Biasanya pakai TypeScript sama React.' 
+                : 'In this portfolio, I combine what I love: clean layouts and precise animations. Usually built with TypeScript and React.'}
             </p>
-            <p className="text-text-muted/70 text-sm md:text-base border-l border-ember pl-4 italic">
-              Gak usah banyak omong, langsung liat project gua aja.
+            <p className="text-text-muted/70 text-sm md:text-base border-l border-ember pl-4 italic mb-4">
+              {language === 'id' 
+                ? 'Gak usah banyak omong, langsung liat project gua aja.' 
+                : 'Enough talking, just check out my projects.'}
             </p>
+            <div>
+              <a 
+                href="/Dani_Resume.pdf" 
+                download 
+                className="focus-ring inline-block px-6 py-3 rounded-full font-display font-semibold text-xs tracking-widest uppercase bg-white/5 border border-white/10 text-text-primary hover:bg-ember/10 hover:border-ember/50 hover:text-ember transition-all duration-300"
+              >
+                {language === 'id' ? 'Unduh CV / Resume' : 'Download Resume'}
+              </a>
+            </div>
           </div>
 
           {/* Dimensional Anchor / Location Card */}
@@ -261,7 +285,9 @@ const AboutSection = () => {
         {/* Subtle Bottom Affordance */}
         <div className="w-full text-center mt-4">
           <p className="font-display text-[9px] text-text-muted tracking-widest uppercase">
-            Masih tahap didevelop. Ntar kalo ada project baru gua update.
+            {language === 'id' 
+              ? 'Masih tahap didevelop. Ntar kalo ada project baru gua update.' 
+              : 'Still in development. I will update when there are new projects.'}
           </p>
         </div>
       </div>

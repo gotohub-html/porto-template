@@ -274,19 +274,19 @@ const SoundGate = ({ onEnter, conceptMode = "main" }) => {
         droneOscsRef.current.forEach((o) => {
           try {
             o.stop();
-          } catch {}
+          } catch { /* already stopped */ }
         });
       }
       if (audioRef.current) {
         try {
           audioRef.current.pause();
           audioRef.current.src = "";
-        } catch {}
+        } catch { /* element gone */ }
       }
       if (audioCtxRef.current) {
         try {
           audioCtxRef.current.close();
-        } catch {}
+        } catch { /* already closed */ }
       }
     };
   }, []);

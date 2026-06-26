@@ -1,6 +1,9 @@
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef, useCallback, lazy, Suspense } from "react";
 import { ScrollSmoother } from "gsap/all";
-import BackroomsWorkspace from "./BackroomsWorkspace";
+
+// Heavy Three.js pieces — only loaded once the visitor noclips through the tape door.
+const Cutscene = lazy(() => import("./Cutscene"));
+const BackroomsGame = lazy(() => import("./BackroomsGame"));
 
 // Low-res film grain overlay component for performance and retro texture
 const GrainOverlay = () => {
@@ -185,8 +188,9 @@ const playRealityExitSound = (ctx) => {
 };
 
 const BackroomsLobby = ({ setConceptMode }) => {
-  // Main states
-  const [showGame, setShowGame] = useState(false);
+  // Main states. phase: "lobby" -> "cutscene" -> "game"
+  const [phase, setPhase] = useState("lobby");
+  const showGame = phase !== "lobby"; // pause lobby fx while in cutscene/game
   const [isLoading, setIsLoading] = useState(true);
   const [loadProgress, setLoadProgress] = useState(0);
   const [loadingText, setLoadingText] = useState("INITIALIZING DEEP LINK TO LEVEL 0...");
@@ -200,9 +204,8 @@ const BackroomsLobby = ({ setConceptMode }) => {
   const [glitchedTitle, setGlitchedTitle] = useState("DANI");
   const [activeRoomText, setActiveRoomText] = useState("> HOVER A DOOR TO DISCOVER DETAILS");
 
-  // Wandering anomaly: a plain wooden door that relocates to random spots
-  const [doorPos, setDoorPos] = useState({ top: 58, left: 78, rot: -4 });
-  const [doorShown, setDoorShown] = useState(false);
+  // The hidden tape door: a faint flicker telegraphs it as an anomaly.
+  const [tapeFlicker, setTapeFlicker] = useState(false);
 
   // Audio refs
   const audioCtxRef = useRef(null);
@@ -431,32 +434,17 @@ const BackroomsLobby = ({ setConceptMode }) => {
     };
   }, [isLoading, showGame]);
 
-  // 4b. The wandering wooden door — fades out, teleports to a new random
-  //     position, fades back in. It is the hidden entrance to the maze.
+  // 4b. The hidden tape door occasionally flickers — the only tell that the
+  //     painter's-tape outline on the wall is a way through, not just a mark.
   useEffect(() => {
     if (isLoading || showGame) return;
-    let hideTimer;
-    const relocate = () => {
-      setDoorShown(false);
-      hideTimer = setTimeout(() => {
-        setDoorPos({
-          top: 18 + Math.random() * 54, // 18%–72% (clear of banners)
-          left: 8 + Math.random() * 80, // 8%–88%
-          rot: (Math.random() - 0.5) * 8,
-        });
-        setDoorShown(true);
-        // a faint flash punches through reality as it materialises
-        setNoclipFlash(true);
-        setTimeout(() => setNoclipFlash(false), 90);
-      }, 700);
-    };
-    const firstAppear = setTimeout(relocate, 2600);
-    const wander = setInterval(relocate, 8000);
-    return () => {
-      clearTimeout(firstAppear);
-      clearTimeout(hideTimer);
-      clearInterval(wander);
-    };
+    const flickerTimer = setInterval(() => {
+      if (Math.random() > 0.6) {
+        setTapeFlicker(true);
+        setTimeout(() => setTapeFlicker(false), 120);
+      }
+    }, 5000);
+    return () => clearInterval(flickerTimer);
   }, [isLoading, showGame]);
 
   // Periodic distant mechanical thuds with feedback echo
@@ -681,9 +669,9 @@ const BackroomsLobby = ({ setConceptMode }) => {
         playNoclipSound(ctx);
       }
     }
-    // Briefly delay the Three.js game mount to allow noclip sound blast to build
+    // Briefly delay the cutscene mount to allow the noclip sound blast to build
     setTimeout(() => {
-      setShowGame(true);
+      setPhase("cutscene");
     }, 600);
   };
 
@@ -695,17 +683,23 @@ const BackroomsLobby = ({ setConceptMode }) => {
     noclip: "> WARNING: ROOM 000 // EXTRADIMENSIONAL HOLE // STABILITY CODE: 0.0% // ENTER MAZE"
   };
 
-  // If in easter egg game mode, mount the 3D walkthrough directly
-  if (showGame) {
+  // Easter-egg flow: tape door -> cutscene -> game. Lazy-loaded so Three.js only
+  // ships when the visitor actually noclips through.
+  if (phase === "cutscene") {
     return (
-      <BackroomsWorkspace 
-        setConceptMode={(mode) => {
-          if (mode === "main") {
-            setConceptMode("main");
-          }
-          setShowGame(false);
-        }} 
-      />
+      <Suspense fallback={<div className="fixed inset-0 z-50 bg-black" />}>
+        <Cutscene onComplete={() => setPhase("game")} />
+      </Suspense>
+    );
+  }
+  if (phase === "game") {
+    return (
+      <Suspense fallback={<div className="fixed inset-0 z-50 bg-black" />}>
+        <BackroomsGame
+          onWin={() => setConceptMode("main")}
+          onQuit={() => setPhase("lobby")}
+        />
+      </Suspense>
     );
   }
 
@@ -726,21 +720,23 @@ const BackroomsLobby = ({ setConceptMode }) => {
         </div>
       )}
 
-      {/* THE WANDERING DOOR — plain wooden door that teleports to random spots.
-          Hidden entrance to the maze easter egg. */}
+      {/* THE TAPE DOOR — a blue painter's-tape outline of a doorway stuck low on
+          the wallpaper. Not really a door… until you push on it. The hidden
+          entrance to BACK2ROOM. Deliberately easy to miss. */}
       <div
+        ref={noclipDoorRef}
         className="fixed z-30 cursor-pointer group"
         style={{
-          top: `${doorPos.top}%`,
-          left: `${doorPos.left}%`,
-          transform: `translate(-50%, -50%) rotate(${doorPos.rot}deg) scale(${doorShown ? 1 : 0.82})`,
-          opacity: doorShown ? 1 : 0,
-          filter: doorShown ? "none" : "blur(6px)",
-          transition: "opacity 0.6s ease, transform 0.7s cubic-bezier(0.16,1,0.3,1), filter 0.6s ease",
-          pointerEvents: doorShown ? "auto" : "none",
+          bottom: "4%",
+          left: "9%",
+          width: "92px",
+          height: "168px",
+          transform: "rotate(-1.5deg)",
+          opacity: tapeFlicker ? 0.35 : 0.8,
+          transition: "opacity 0.15s ease",
         }}
         onMouseEnter={() => {
-          setActiveRoomText("> ??? // A DOOR THAT SHOULDN'T BE HERE // IT KEEPS MOVING");
+          setActiveRoomText("> ??? // THIS ISN'T A DOOR // SO WHY IS IT TAPED SHUT");
           handleDoorHover(true);
         }}
         onMouseLeave={() => {
@@ -749,43 +745,23 @@ const BackroomsLobby = ({ setConceptMode }) => {
         }}
         onClick={handleNoclipEnter}
       >
-        <div
-          ref={noclipDoorRef}
-          className="relative w-24 md:w-28 h-44 md:h-52 border-4 border-[#5a4e28] rounded-t-sm shadow-[inset_0_0_12px_rgba(0,0,0,0.95),0_12px_30px_rgba(0,0,0,0.7)] door-frame bg-[#0d0d0c] overflow-visible animate-[vhs-flicker_0.4s_infinite]"
-        >
-          {/* Darkness / faint pull behind the leaf */}
-          <div className="absolute inset-0 bg-[#0d0d0c] rounded-t-sm overflow-hidden pointer-events-none">
-            <div className="absolute inset-0 bg-gradient-to-t from-amber-500/25 to-stone-300/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-            <div className="absolute bottom-3 left-0 right-0 text-center font-mono text-[7px] text-amber-500/70 animate-pulse uppercase">[ enter? ]</div>
-          </div>
-
-          {/* Wooden leaf (swings ajar on hover) */}
+        {/* tape strips forming a door rectangle (outline only) */}
+        {[
+          "absolute top-0 left-0 right-0 h-2",          // top
+          "absolute bottom-0 left-0 right-0 h-2",       // bottom
+          "absolute top-0 bottom-0 left-0 w-2",         // left
+          "absolute top-0 bottom-0 right-0 w-2",        // right
+        ].map((cls, i) => (
           <div
-            className="absolute inset-0 origin-left duration-[900ms] ease-in-out group-hover:[transform:rotateY(-62deg)_scale(0.98)] shadow-[inset_0_1px_2px_rgba(255,255,255,0.2),3px_0_8px_rgba(0,0,0,0.4)] border-r-2 border-stone-900 rounded-t-sm select-none"
-            style={{
-              background:
-                "linear-gradient(to right, #8a7b40 0%, #a89854 25%, #a89854 75%, #7b6d39 100%)",
-            }}
-          >
-            {/* Recessed panels */}
-            <div className="absolute inset-x-3 top-4 bottom-12 flex flex-col justify-between pointer-events-none gap-2 z-10 opacity-70">
-              <div className="flex-1 border border-stone-950/70 bg-stone-900/10 shadow-[inset_0_3px_5px_rgba(0,0,0,0.85)] rounded-sm" />
-              <div className="h-12 border border-stone-950/70 bg-stone-900/10 shadow-[inset_0_3px_5px_rgba(0,0,0,0.85)] rounded-sm" />
-            </div>
-
-            {/* Faded blue tape — a quiet nod to the film */}
-            <div className="absolute top-[46%] left-1/2 -translate-x-1/2 w-[88%] h-4 bg-[#4A90C4]/70 -rotate-2 flex items-center justify-center text-[7px] text-white/90 font-mono font-bold uppercase shadow-[0_2px_4px_rgba(0,0,0,0.4)] z-20 border-y border-blue-400/20">
-              000
-            </div>
-
-            {/* Brass lever handle */}
-            <div className="absolute bottom-14 right-1.5 w-3 h-9 bg-gradient-to-r from-yellow-700 via-yellow-500 to-yellow-800 border border-yellow-900 rounded-[2px] shadow-sm z-20">
-              <div className="absolute top-1.5 right-1 w-5 h-1.5 bg-gradient-to-b from-yellow-300 via-yellow-400 to-yellow-600 border border-yellow-700 rounded-full origin-right transform group-hover:rotate-12 transition-transform duration-300" />
-            </div>
-
-            {/* Brass kick plate */}
-            <div className="absolute bottom-0 inset-x-0 h-3.5 bg-gradient-to-r from-yellow-700 via-yellow-500 to-yellow-700 border-t border-yellow-800 rounded-b-sm z-20" />
-          </div>
+            key={i}
+            className={`${cls} bg-[#4A90C4]/80 shadow-[0_1px_3px_rgba(0,0,0,0.4)] mix-blend-screen ${tapeFlicker ? "animate-[vhs-flicker_0.3s_infinite]" : ""}`}
+            style={{ transform: `rotate(${(i % 2 ? 0.6 : -0.4)}deg)` }}
+          />
+        ))}
+        {/* faint pull-through glow on hover */}
+        <div className="absolute inset-2 bg-gradient-to-t from-amber-500/0 to-black/0 group-hover:from-amber-500/15 group-hover:to-stone-200/5 transition-all duration-500 pointer-events-none" />
+        <div className="absolute inset-x-0 bottom-2 text-center font-mono text-[7px] text-[#4A90C4]/0 group-hover:text-[#4A90C4]/80 transition-colors uppercase tracking-widest pointer-events-none">
+          push?
         </div>
       </div>
 

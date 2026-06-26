@@ -3,6 +3,7 @@ import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { ScrollSmoother } from "gsap/all";
 import HeroCanvas from "../components/HeroCanvas";
+import { useLanguage } from "../context/LanguageContext";
 
 gsap.registerPlugin(ScrollSmoother);
 
@@ -10,6 +11,7 @@ const HeroSection = () => {
   const titleRef = useRef(null);
   const cardRef = useRef(null);
   const scrollIndicatorRef = useRef(null);
+  const { language } = useLanguage();
 
   useGSAP(() => {
     const chars = titleRef.current.querySelectorAll(".char-span");
@@ -130,8 +132,6 @@ const HeroSection = () => {
     }
   };
 
-  const marqueeText = "WEB DEVELOPER · UI/UX DESIGNER · PURWAKARTA · ";
-
   return (
     <section
       id="home"
@@ -229,16 +229,18 @@ const HeroSection = () => {
         <div className="hero-details grid grid-cols-1 md:grid-cols-12 gap-8 w-full items-end mt-4 border-t border-white/5 pt-8">
           <div className="md:col-span-6">
             <p className="font-sans text-sm sm:text-base text-text-muted leading-relaxed max-w-xl">
-              Developer &amp; designer otodidak. Suka bikin website interaktif yang bersih dan gak ngebosenin.
+              {language === 'id' 
+                ? 'Developer & designer otodidak. Suka bikin website interaktif yang bersih dan gak ngebosenin.' 
+                : 'Self-taught developer & designer. I love building clean, interactive websites that are never boring.'}
             </p>
           </div>
           <div className="md:col-span-3 flex flex-col gap-1 text-text-muted font-display text-xs uppercase tracking-wider font-semibold md:pl-8">
-            <span className="text-text-primary/70">Ketersediaan</span>
+            <span className="text-text-primary/70">{language === 'id' ? 'Ketersediaan' : 'Availability'}</span>
             <span className="flex items-center gap-1.5">
               <span className="w-1.5 h-1.5 rounded-full bg-amber glow-pulse" />
-              Lagi mager
+              {language === 'id' ? 'Lagi mager' : 'Currently chilling'}
             </span>
-            <span className="normal-case tracking-normal">Tapi kalau ada project seru kabarin aja</span>
+            <span className="normal-case tracking-normal">{language === 'id' ? 'Tapi kalau ada project seru kabarin aja' : 'But hit me up if you have a cool project'}</span>
           </div>
           <div className="hero-ctas md:col-span-3 flex flex-col sm:flex-row md:flex-col gap-4 justify-end md:items-end w-full">
             <a
@@ -246,7 +248,7 @@ const HeroSection = () => {
               onClick={handleScrollToWork}
               className="focus-ring w-full md:w-auto text-center px-8 py-3.5 rounded-full font-display font-semibold text-xs tracking-widest uppercase bg-ember text-void hover:bg-amber hover:text-text-primary transition-all duration-300 hover:scale-105 active:scale-95 cursor-pointer"
             >
-              Lihat Project
+              {language === 'id' ? 'Lihat Project' : 'View Projects'}
             </a>
             <a
               href="https://github.com/danixbo"
@@ -266,7 +268,7 @@ const HeroSection = () => {
         className="absolute bottom-8 z-10 flex items-center gap-3"
       >
         <span className="text-[10px] uppercase font-display font-medium tracking-widest text-text-muted">
-          Scroll ke bawah
+          {language === 'id' ? 'Scroll ke bawah' : 'Scroll down'}
         </span>
         <div className="w-12 h-px bg-white/10 relative overflow-hidden">
           <div

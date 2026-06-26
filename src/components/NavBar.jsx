@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import gsap from "gsap";
+import { useLanguage } from "../context/LanguageContext";
 import { ScrollSmoother } from "gsap/all";
 
 gsap.registerPlugin(ScrollSmoother);
@@ -7,6 +8,7 @@ gsap.registerPlugin(ScrollSmoother);
 const NavBar = ({ conceptMode = "main", setConceptMode }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const { language, toggleLanguage } = useLanguage();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -73,29 +75,35 @@ const NavBar = ({ conceptMode = "main", setConceptMode }) => {
               onClick={(e) => handleNavClick(e, "#about")}
               className="font-sans text-xs uppercase tracking-widest font-semibold text-text-muted hover:text-text-primary transition-colors draw-underline weight-hover focus-ring"
             >
-              Tentang
+              {language === 'id' ? 'Tentang' : 'About'}
             </a>
             <a
               href="#projects"
               onClick={(e) => handleNavClick(e, "#projects")}
               className="font-sans text-xs uppercase tracking-widest font-semibold text-text-muted hover:text-text-primary transition-colors draw-underline weight-hover focus-ring"
             >
-              Project
+              {language === 'id' ? 'Project' : 'Projects'}
             </a>
             <a
               href="#vault"
               onClick={(e) => handleNavClick(e, "#vault")}
               className="font-sans text-xs uppercase tracking-widest font-semibold text-text-muted hover:text-text-primary transition-colors draw-underline weight-hover focus-ring"
             >
-              Arsip
+              {language === 'id' ? 'Arsip' : 'Vault'}
             </a>
             <a
               href="#contact"
               onClick={(e) => handleNavClick(e, "#contact")}
               className="font-sans text-xs uppercase tracking-widest font-semibold text-text-muted hover:text-text-primary transition-colors draw-underline weight-hover focus-ring"
             >
-              Kontak
+              {language === 'id' ? 'Kontak' : 'Contact'}
             </a>
+            <button
+              onClick={toggleLanguage}
+              className="font-sans text-xs uppercase tracking-widest font-bold text-text-muted hover:text-text-primary transition-colors focus-ring px-2 py-1 rounded bg-white/5"
+            >
+              {language === 'id' ? 'ID' : 'EN'}
+            </button>
           </>
         )}
 
@@ -165,29 +173,35 @@ const NavBar = ({ conceptMode = "main", setConceptMode }) => {
             onClick={(e) => handleNavClick(e, "#about")}
             className="font-display text-xl uppercase tracking-widest font-bold text-text-primary hover:text-ember transition-colors focus-ring"
           >
-            Tentang
+            {language === 'id' ? 'Tentang' : 'About'}
           </a>
           <a
             href="#projects"
             onClick={(e) => handleNavClick(e, "#projects")}
             className="font-display text-xl uppercase tracking-widest font-bold text-text-primary hover:text-ember transition-colors focus-ring"
           >
-            Project
+            {language === 'id' ? 'Project' : 'Projects'}
           </a>
           <a
             href="#vault"
             onClick={(e) => handleNavClick(e, "#vault")}
             className="font-display text-xl uppercase tracking-widest font-bold text-text-primary hover:text-ember transition-colors focus-ring"
           >
-            Arsip
+            {language === 'id' ? 'Arsip' : 'Vault'}
           </a>
           <a
             href="#contact"
             onClick={(e) => handleNavClick(e, "#contact")}
             className="font-display text-xl uppercase tracking-widest font-bold text-text-primary hover:text-ember transition-colors focus-ring"
           >
-            Kontak
+            {language === 'id' ? 'Kontak' : 'Contact'}
           </a>
+          <button
+            onClick={() => { toggleLanguage(); setIsOpen(false); }}
+            className="font-display text-xl uppercase tracking-widest font-bold text-amber-500 hover:text-amber-400 transition-colors focus-ring mt-4"
+          >
+            {language === 'id' ? 'Switch to English' : 'Ganti Bahasa'}
+          </button>
         </div>
       )}
     </nav>

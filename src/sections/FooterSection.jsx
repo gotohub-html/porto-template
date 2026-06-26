@@ -1,11 +1,14 @@
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import gsap from "gsap";
 import { ScrollSmoother } from "gsap/all";
+import { useLanguage } from "../context/LanguageContext";
 
 gsap.registerPlugin(ScrollSmoother);
 
 const FooterSection = () => {
   const containerRef = useRef(null);
+  const { language } = useLanguage();
+  const [showA11y, setShowA11y] = useState(false);
 
   const triggerConfetti = (e) => {
     // Console log Easter egg
@@ -66,13 +69,13 @@ const FooterSection = () => {
         {/* Left Side */}
         <div className="font-sans text-xs text-text-muted text-center md:text-left">
           <p>
-            Dibuat oleh Dani &middot;{" "}
+            {language === 'id' ? 'Dibuat oleh Dani' : 'Built by Dani'} &middot;{" "}
             <span
               onClick={triggerConfetti}
               className="text-ember cursor-pointer hover:text-white transition-colors duration-300 font-semibold select-none inline-block px-1"
-              title="Aktifkan detail node"
+              title={language === 'id' ? 'Aktifkan detail node' : 'Activate node details'}
             >
-              2025
+              2026
             </span>{" "}
             &middot;{" "}
             <span className="censor-reveal relative inline-block px-1.5 cursor-none group select-none">
@@ -86,12 +89,19 @@ const FooterSection = () => {
         </div>
 
         {/* Right Side */}
-        <div className="flex items-center gap-6 font-display text-[10px] text-text-muted uppercase tracking-wider font-semibold">
+        <div className="flex flex-wrap justify-center items-center gap-4 md:gap-6 font-display text-[10px] text-text-muted uppercase tracking-wider font-semibold">
+          <button
+            onClick={() => setShowA11y(true)}
+            className="hover:text-text-primary transition-colors duration-300 focus-ring"
+          >
+            {language === 'id' ? 'Aksesibilitas' : 'Accessibility'}
+          </button>
+          <span>&middot;</span>
           <a
             href="https://github.com/danixbo"
             target="_blank"
             rel="noopener noreferrer"
-            className="hover:text-text-primary transition-colors duration-300"
+            className="hover:text-text-primary transition-colors duration-300 focus-ring"
           >
             GitHub
           </a>
@@ -100,7 +110,7 @@ const FooterSection = () => {
             href="https://guns.lol/noblondzzz"
             target="_blank"
             rel="noopener noreferrer"
-            className="hover:text-text-primary transition-colors duration-300"
+            className="hover:text-text-primary transition-colors duration-300 focus-ring"
           >
             Guns.lol
           </a>
@@ -111,12 +121,52 @@ const FooterSection = () => {
               e.preventDefault();
               ScrollSmoother.get()?.scrollTo("#home", true);
             }}
-            className="hover:text-text-primary transition-colors duration-300"
+            className="hover:text-text-primary transition-colors duration-300 focus-ring"
           >
-            Ke Atas
+            {language === 'id' ? 'Ke Atas' : 'Back to Top'}
           </a>
         </div>
       </div>
+
+      {/* Accessibility Modal */}
+      {showA11y && (
+        <div className="fixed inset-0 z-[1000] flex justify-center items-center bg-black/60 backdrop-blur-sm p-4" onClick={() => setShowA11y(false)}>
+          <div 
+            className="bg-[#161615] border border-white/10 rounded-2xl p-8 max-w-lg w-full shadow-2xl" 
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h3 className="font-display font-bold text-2xl text-text-primary mb-4">
+              {language === 'id' ? 'Komitmen Aksesibilitas' : 'Accessibility Commitment'}
+            </h3>
+            <div className="font-sans text-sm text-text-muted flex flex-col gap-3">
+              <p>
+                {language === 'id' 
+                  ? 'Gua berusaha bikin web yang bisa diakses sama siapa aja. Portfolio ini udah nerapin:' 
+                  : 'I strive to build an accessible web for everyone. This portfolio implements:'}
+              </p>
+              <ul className="list-disc pl-5 space-y-1">
+                <li>{language === 'id' ? 'Dukungan navigasi keyboard (focus rings)' : 'Keyboard navigation support (focus rings)'}</li>
+                <li>{language === 'id' ? 'Kontras warna yang aman' : 'Safe color contrast'}</li>
+                <li>{language === 'id' ? 'Pengaturan prefers-reduced-motion untuk animasi' : 'Respects prefers-reduced-motion for animations'}</li>
+                <li>{language === 'id' ? 'Aria-labels untuk icon dan link' : 'Aria-labels for icons and links'}</li>
+              </ul>
+              <p className="mt-2 text-xs opacity-70">
+                {language === 'id' 
+                  ? '*Kecuali mode Backrooms yang emang didesain susah dan nyeremin.' 
+                  : '*Except the Backrooms mode, which is intentionally designed to be disorienting.'}
+              </p>
+            </div>
+            <div className="mt-6 flex justify-end">
+              <button 
+                onClick={() => setShowA11y(false)}
+                className="px-6 py-2 rounded-lg bg-ember text-void font-display font-semibold uppercase text-xs tracking-widest hover:bg-amber hover:text-black transition-colors focus-ring"
+              >
+                {language === 'id' ? 'Tutup' : 'Close'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </footer>
   );
 };

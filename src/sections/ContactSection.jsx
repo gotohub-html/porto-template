@@ -2,7 +2,8 @@ import { useRef } from "react";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/all";
-import { Send, Mail } from "lucide-react";
+import { Send, Mail, Download } from "lucide-react";
+import { useLanguage } from "../context/LanguageContext";
 
 // Inline Github Icon Component
 const GithubIcon = ({ size = 20, className = "" }) => (
@@ -25,6 +26,7 @@ gsap.registerPlugin(ScrollTrigger);
 
 const ContactSection = () => {
   const containerRef = useRef(null);
+  const { language } = useLanguage();
 
   useGSAP(() => {
     gsap.fromTo(
@@ -45,7 +47,7 @@ const ContactSection = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    alert("Pesan masuk. Ntar gua baca.");
+    alert(language === 'id' ? "Pesan masuk. Ntar gua baca." : "Message received. I'll read it later.");
   };
 
   return (
@@ -63,24 +65,26 @@ const ContactSection = () => {
             <div className="flex items-center gap-3">
               <div className="w-1.5 h-1.5 rounded-full bg-ember" />
               <span className="font-display text-text-muted text-xs uppercase tracking-widest font-semibold">
-                Hubungi Gua
+                {language === 'id' ? 'Hubungi Gua' : 'Get in Touch'}
               </span>
             </div>
             <h2 className="font-display font-bold text-3xl md:text-4xl text-text-primary tracking-tighter">
-              Ada ide projek seru?
+              {language === 'id' ? 'Ada ide projek seru?' : 'Have a cool project idea?'}
             </h2>
             <div className="w-16 h-[1px] bg-ember mt-2" />
             <p className="font-sans text-sm text-text-muted leading-relaxed mt-4">
-              Drop aja pesan lewat form di sebelah, atau bisa langsung hubungi medsos gua di bawah.
+              {language === 'id' 
+                ? 'Drop aja pesan lewat form di sebelah, atau bisa langsung hubungi medsos gua di bawah.' 
+                : 'Drop a message via the form, or reach out through my socials below.'}
             </p>
           </div>
 
           {/* Social connections */}
           <div className="flex flex-col gap-4">
             <span className="font-display text-[10px] text-text-muted uppercase tracking-widest font-semibold">
-              Medsos &amp; Kontak
+              {language === 'id' ? 'Medsos & Kontak' : 'Socials & Contact'}
             </span>
-            <div className="flex items-center gap-4">
+            <div className="flex flex-wrap items-center gap-4">
               <a
                 href="https://github.com/danixbo"
                 target="_blank"
@@ -106,6 +110,14 @@ const ContactSection = () => {
               >
                 <Mail size={16} />
               </a>
+              <a
+                href="/Dani_Resume.pdf"
+                download
+                className="px-4 h-10 rounded-lg flex items-center justify-center gap-2 bg-white/[0.02] border border-white/5 hover:border-ember/40 hover:bg-ember/5 text-text-primary hover:text-ember transition-all duration-300 text-xs font-display font-semibold uppercase tracking-wider"
+              >
+                <Download size={14} />
+                <span>{language === 'id' ? 'Unduh CV' : 'Resume'}</span>
+              </a>
             </div>
           </div>
         </div>
@@ -114,14 +126,14 @@ const ContactSection = () => {
         <form onSubmit={handleSubmit} className="lg:col-span-3 flex flex-col gap-5">
           <div className="flex flex-col gap-1.5">
             <label htmlFor="name" className="font-display text-[10px] font-semibold uppercase tracking-wider text-text-muted">
-              Nama
+              {language === 'id' ? 'Nama' : 'Name'}
             </label>
             <input
               type="text"
               id="name"
               required
               className="w-full px-4 py-3 rounded-lg border border-white/5 bg-white/[0.01] text-white focus-ring focus:border-ember/40 focus:bg-white/[0.02] transition-all duration-300 text-sm font-sans"
-              placeholder="Dani"
+              placeholder={language === 'id' ? "Dani" : "John Doe"}
             />
           </div>
 
@@ -140,14 +152,14 @@ const ContactSection = () => {
 
           <div className="flex flex-col gap-1.5">
             <label htmlFor="message" className="font-display text-[10px] font-semibold uppercase tracking-wider text-text-muted">
-              Pesan
+              {language === 'id' ? 'Pesan' : 'Message'}
             </label>
             <textarea
               id="message"
               required
               rows={4}
               className="w-full px-4 py-3 rounded-lg border border-white/5 bg-white/[0.01] text-white focus-ring focus:border-ember/40 focus:bg-white/[0.02] transition-all duration-300 text-sm font-sans resize-none"
-              placeholder="Tulis apa aja di sini..."
+              placeholder={language === 'id' ? "Tulis apa aja di sini..." : "Write something here..."}
             />
           </div>
 
@@ -155,7 +167,7 @@ const ContactSection = () => {
             type="submit"
             className="w-full py-3.5 rounded-lg font-display font-semibold uppercase tracking-wider text-xs bg-ember text-void flex items-center justify-center gap-2 hover:bg-amber hover:text-text-primary transition-colors duration-300 hover:scale-[1.005] active:scale-[0.995] cursor-pointer"
           >
-            <span>Kirim</span>
+            <span>{language === 'id' ? 'Kirim' : 'Send'}</span>
             <Send size={12} />
           </button>
         </form>

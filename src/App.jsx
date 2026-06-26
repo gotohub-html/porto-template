@@ -1,4 +1,4 @@
-import { useState, lazy, Suspense } from "react";
+import { useState, lazy, Suspense, useEffect } from "react";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import { ScrollTrigger, ScrollSmoother } from "gsap/all";
@@ -6,7 +6,8 @@ import { ScrollTrigger, ScrollSmoother } from "gsap/all";
 import NavBar from "./components/NavBar";
 import CustomCursor from "./components/CustomCursor";
 import SoundGate from "./components/SoundGate";
-// Lazy-loaded: pulls in Three.js + post-processing only when the visitor no-clips in
+// Lazy-loaded: the lobby itself is light, but it further lazy-loads the BACK2ROOM
+// cutscene + game (Three.js) only once the visitor noclips through the tape door.
 const BackroomsLobby = lazy(() => import("./components/BackroomsLobby"));
 import HeroSection from "./sections/HeroSection";
 import ShowreelSection from "./sections/ShowreelSection";
@@ -23,6 +24,40 @@ gsap.registerPlugin(ScrollTrigger, ScrollSmoother);
 const App = () => {
   const [entered, setEntered] = useState(false);
   const [conceptMode, setConceptMode] = useState("main"); // 'main' | 'backrooms'
+  const [devMode, setDevMode] = useState(false);
+  const [fps, setFps] = useState(0);
+
+  // Dev Mode toggle and FPS counter
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.ctrlKey && e.shiftKey && e.key.toLowerCase() === 'd') {
+        e.preventDefault();
+        setDevMode(prev => !prev);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+
+    let frameCount = 0;
+    let lastTime = performance.now();
+    let rafId;
+
+    const tick = () => {
+      frameCount++;
+      const now = performance.now();
+      if (now - lastTime >= 1000) {
+        setFps(frameCount);
+        frameCount = 0;
+        lastTime = now;
+      }
+      rafId = requestAnimationFrame(tick);
+    };
+    rafId = requestAnimationFrame(tick);
+
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      cancelAnimationFrame(rafId);
+    };
+  }, []);
 
   useGSAP(() => {
     // Initialise GSAP ScrollSmoother for fluid scroll physics
@@ -120,6 +155,17 @@ const App = () => {
           <FooterSection />
         </div>
       </div>
+
+      {/* Dev Mode Overlay */}
+      {devMode && (
+        <div className="fixed bottom-4 right-4 z-[100] bg-black/80 backdrop-blur-md border border-ember/50 p-4 rounded font-mono text-xs text-ember pointer-events-none">
+          <div className="font-bold border-b border-ember/30 pb-1 mb-2">DEBUG MODE</div>
+          <div className="flex justify-between gap-4"><span>FPS:</span> <span>{fps}</span></div>
+          <div className="flex justify-between gap-4"><span>Mode:</span> <span>{conceptMode}</span></div>
+          <div className="flex justify-between gap-4"><span>GSAP:</span> <span>Active</span></div>
+          <div className="flex justify-between gap-4"><span>Three.js:</span> <span>{conceptMode === 'main' ? 'Canvas' : 'PBR'}</span></div>
+        </div>
+      )}
     </>
   );
 };

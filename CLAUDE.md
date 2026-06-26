@@ -80,12 +80,31 @@ and "clip-through" reality tears. It presents the portfolio as **three wooden do
 (Room 101 → `#about`, 102 → `#projects`, 103 → `#contact`); clicking one calls
 `handleExitToReality(target)` which sets `conceptMode` back to `"main"` and scrolls there.
 
-A **fourth wooden door wanders** to random screen positions every ~8s (the
-`doorPos`/`doorShown` state). Clicking it (`handleNoclipEnter`) mounts the
-**3D walkable maze easter egg** (`components/BackroomsWorkspace.jsx`) via `showGame`
-— a first-person Three.js + post-processing experience (WASD/pointer-lock on desktop,
-joystick on mobile) with a stalking entity, kiosks, and procedural footsteps. Exiting
-the maze returns to the lobby (or to `main`).
+The lobby doubles as the **BACK2ROOM** game menu. A **blue painter's-tape door
+outline** is taped low on the wallpaper (the `noclipDoorRef` element) — a deliberately
+easy-to-miss easter egg. Clicking it (`handleNoclipEnter`) plays the noclip rumble and
+advances a `phase` state machine: `"lobby" → "cutscene" → "game"`.
+
+- **`cutscene`** (`components/Cutscene.jsx`, lazy): a ~45s non-interactive cold-open
+  (Three.js + GSAP) — black → first-person walk → floor glitch → no-clip fall → impact
+  flash → wake → stand up → find flashlight → flicker-on → explore → VHS glitch. Skippable
+  after the impact (ESC / triple-tap). Spec: `BACK2ROOM_Cutscene_Design.md`. On finish it
+  sets `phase = "game"`.
+- **`game`** (`components/BackroomsGame.jsx`, lazy): the "emergency upload protocol" —
+  first-person horror in a hand-designed maze. **Dark = safe, light = danger.** Carry 4
+  data packets (ABOUT/SKILLS/PROJECTS/CONTACT) to upload terminals (hold `E` ~5s) while a
+  light-seeking entity hunts you via A*; each upload shows a corrupted found-document
+  reveal. Battery drains while the flashlight (`F`) is on; batteries refill it. Forgiving
+  fail (respawn at last terminal, packets kept). Win → exit door → "UPLOAD COMPLETE" →
+  `onWin()` (sets `conceptMode = "main"`). `onQuit()` returns to the lobby. Spec:
+  `thegame.md` and `BACK2ROOM_PLAN.md`.
+
+Game internals live in `components/game/`: `maze.js` (fixed map + parser + packet
+metadata), `pathfinding.js` (A* + line-of-sight), `entity.js` (canvas wire-silhouette),
+`audio.js` (`GameAudio` — procedural hum/footsteps/chime/static), `quality.js`
+(device-tier graphics presets), `render.js` (procedural PBR textures, CRT shader,
+quality-aware `EffectComposer` with SSAO + bloom). The maze layout is validated for
+reachability by `node`-flood-fill against `parseMaze()` before trusting edits.
 
 ### Directory layout
 ```
@@ -99,8 +118,10 @@ src/
     CustomCursor.jsx       # desktop custom cursor (main mode only)
     SoundGate.jsx          # intro gate: sound choice -> 0->100 counter -> "DANI" reveal
     HeroCanvas.jsx         # Three.js fragment-shader fluid background
-    BackroomsLobby.jsx     # backrooms mode: creepy liminal lobby + wandering door (lazy-loaded)
-    BackroomsWorkspace.jsx # 3D walkable maze easter egg, mounted by the lobby's wandering door
+    BackroomsLobby.jsx     # backrooms mode: creepy liminal lobby + tape-door menu (lazy-loaded)
+    Cutscene.jsx           # ~45s BACK2ROOM cold-open (Three.js + GSAP), lazy-loaded
+    BackroomsGame.jsx      # BACK2ROOM upload-protocol horror game, lazy-loaded
+    game/                  # game internals (maze, pathfinding, entity, audio, quality, render)
   sections/
     HeroSection.jsx        # landing: HeroCanvas + animated headline + marquee
     ShowreelSection.jsx
@@ -157,15 +178,19 @@ Reusable CSS helpers (defined in `index.css`):
   not `window.scrollTo`, while in main mode (smoother intercepts scroll).
 - **Audio is procedural:** there are no sound files. Web Audio graphs live in
   `SoundGate.jsx` (ambient pad), `BackroomsLobby.jsx` (fluorescent hum + door
-  creak/thud + no-clip rumble) and `BackroomsWorkspace.jsx` (hum, footsteps, entity
-  sting). Browsers block autoplay — audio starts/resumes on user gesture.
-- **WebGL:** `HeroCanvas.jsx` (GLSL fragment shader, Perlin/fbm domain warping) and
-  `BackroomsWorkspace.jsx` (3D maze + CRT post-processing) both use Three.js. They clamp
-  pixel ratio, respect `prefers-reduced-motion`, and dispose renderer/geometry/material
-  on unmount (already handled). The maze is lazy-loaded so Three.js stays out of the main bundle.
+  creak/thud + no-clip rumble) and `game/audio.js` (`GameAudio`: hum, spatialized
+  footsteps, upload chime, static burst, entity sting — used by both `Cutscene.jsx` and
+  `BackroomsGame.jsx`). Browsers block autoplay — audio starts/resumes on user gesture
+  (the tape-door click / "click to begin").
+- **WebGL:** `HeroCanvas.jsx` (GLSL fragment shader, Perlin/fbm domain warping),
+  `Cutscene.jsx` and `BackroomsGame.jsx` (3D + `game/render.js` CRT/SSAO/bloom post) all
+  use Three.js. They clamp pixel ratio (per `game/quality.js` device tier), and dispose
+  renderer/geometry/material on unmount. The cutscene + game are lazy-loaded so Three.js
+  post-processing stays out of the main bundle until the visitor noclips in.
 - **Two-mode invariant:** anything using ScrollTrigger/ScrollSmoother belongs to main
-  mode only. The backrooms pieces (`BackroomsLobby` + its `BackroomsWorkspace` maze) are
-  intentionally standalone — own state, own audio, no GSAP.
+  mode only. The backrooms pieces (`BackroomsLobby` + its lazy `Cutscene`/`BackroomsGame`)
+  are intentionally standalone — own state, own audio. GSAP is used **only** inside the
+  self-contained `Cutscene` (timeline), never ScrollTrigger/ScrollSmoother.
 - **No TypeScript** — plain JSX.
 
 ---

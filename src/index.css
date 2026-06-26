@@ -389,6 +389,12 @@ h4 {
   animation: vhs-flicker 0.1s infinite;
 }
 
+/* BACK2ROOM — corrupted found-document reveal slides up */
+@keyframes slideUp {
+  from { transform: translateY(40px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
 @keyframes screen-shake {
   0% { transform: translate(0, 0) rotate(0deg); }
   10% { transform: translate(-3px, 2px) rotate(-0.5deg); }
